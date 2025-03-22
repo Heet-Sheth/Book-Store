@@ -12,7 +12,6 @@ router.post('/signup', async (req, res) => {
         const token = generateToken({ id: savedUser._id });
 
         res.status(200).send({ token: token });
-        console.log('User added');
     } catch (err) {
         res.status(500).send("Internal Server error:");
         console.log(err);

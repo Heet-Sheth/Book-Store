@@ -9,8 +9,10 @@ router.use(jwtMiddleware);
 router.get('/', async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
-        console.log(user.cart);
         const books = await Books.find({ _id: { $in: user.cart.map(item => item.bookId) } });
+        if (!books) {
+            res.status(201).send("No books found");
+        }
         res.status(200).send(books);
     }
     catch (err) {
@@ -21,8 +23,11 @@ router.get('/', async (req, res) => {
 
 router.get('/history', async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).populate('history.BookId');
-        const books = user.history.map(item => item.bookId);
+        const user = await User.findById(req.user.id);
+        const books = await Books.find({ _id: { $in: user.history.map(item => item.bookId) } });
+        if (books.length === 0) {
+            return res.status(404).send("No books in history");
+        }
         res.status(200).send(books);
     }
     catch (err) {
@@ -33,9 +38,11 @@ router.get('/history', async (req, res) => {
 
 router.post('/checkout', async (req, res) => {
     try {
-        const user = await User.findById(req.user.id
-        ).populate('cart.BookId');
-        const books = user.cart.map(item => item.bookId);
+        const user = await User.findById(req.user.id);
+        const books = user.cart.map(item => ({ bookId: item.bookId }));
+        if (books.length === 0) {
+            return res.status(404).send("No books in cart");
+        }
         user.history.push(...books);
         user.cart = [];
         await user.save();
@@ -57,7 +64,7 @@ router.patch('/checkout/:id', async (req, res) => {
         }
 
         const [book] = user.cart.splice(bookIndex, 1);
-        user.history.push(book.bookId);
+        user.history.push({ bookId: book.bookId });
         await user.save();
 
         res.status(200).send("Book checked out");

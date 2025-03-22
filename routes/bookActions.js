@@ -71,8 +71,6 @@ router.post('/add/:id', async (req, res) => {
             return res.status(404).send("User not found");
         }
 
-        console.log(user);
-
         // Add the book to the user's cart
         user.cart = user.cart || [];
         user.cart.push({ bookId: bookId });
