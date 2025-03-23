@@ -18,6 +18,15 @@ const storage = multer.diskStorage({
 
 router.use(jwtMiddleware);
 
+const adminChecker = (req, res, next) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+    next();
+};
+
+router.use(adminChecker);
+
 // Create a new book
 router.post('/', multer({ storage: storage }).single('coverImage'), async (req, res) => {
     try {
