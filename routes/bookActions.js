@@ -55,6 +55,32 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+router.post('/rate/:id', async (req, res) => {
+    try {
+        const book = await Books.findById(req.params.id);
+
+        if (!book) {
+            return res.status(404).send("Book not found");
+        }
+
+        if (!req.body.rating) {
+            return res.status(404).send("Rating is required");
+        }
+
+        book.totalofAllRatings += req.body.rating;
+        book.totalRatingCount += 1;
+        book.averageRating = book.totalofAllRatings / book.totalRatingCount;
+
+        await book.save();
+
+        res.status(200).send("You rated the book successfully!!! Thank you");
+    }
+    catch (err) {
+        res.status(500).send("Internal Server error");
+        console.log(err)
+    }
+})
+
 router.post('/add/:id', async (req, res) => {
     try {
         const userId = req.user.id;

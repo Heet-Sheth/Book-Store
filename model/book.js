@@ -36,20 +36,15 @@ const bookSchema = new mongoose.Schema({
         default: 'E-book',
         enum: ['Hardcover', 'Paperback', 'E-book']
     },
-    rating: [
-        {
-            userId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User'
-            },
-            rate: {
-                type: Number,
-                required: true,
-                enum: [1, 2, 3, 4, 5]
-            }
-        }
-    ],
+    totalofAllRatings: {
+        type: Number,
+        default: 0
+    },
     averageRating: {
+        type: Number,
+        default: 0
+    },
+    totalRatingCount: {
         type: Number,
         default: 0
     },

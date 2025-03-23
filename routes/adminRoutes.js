@@ -8,12 +8,9 @@ const path = require('path');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        console.log("file", file);
-        console.log("req", req);
         cb(null, 'uploads/images');
     },
     filename: function (req, file, cb) {
-        console.log("req", req);
         const prefix = Date.now();
         cb(null, prefix + "-" + file.originalname);
     }
@@ -25,8 +22,10 @@ router.use(jwtMiddleware);
 router.post('/', multer({ storage: storage }).single('coverImage'), async (req, res) => {
     try {
         const book = new Books(req.body);
-        const filePath = req.file.path;
-        book.coverImage = filePath;
+        if (req.file) {
+            const filePath = req.file.path;
+            book.coverImage = filePath;
+        }
         await book.save();
         res.status(201).json(book);
     } catch (error) {
