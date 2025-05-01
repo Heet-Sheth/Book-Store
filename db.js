@@ -1,6 +1,6 @@
 mongose = require('mongoose');
 require('dotenv').config();
-const local_db = process.env.local_db;
+const local_db = process.env.local_db || 'mongodb://localhost:27017/BookStore';
 
 mongose.connect(local_db.toString());
 
