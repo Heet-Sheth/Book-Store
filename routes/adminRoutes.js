@@ -19,7 +19,8 @@ const storage = multer.diskStorage({
 router.use(jwtMiddleware);
 
 const adminChecker = (req, res, next) => {
-    if (req.user.role !== 'admin') {
+    // Check if the user has admin role
+    if (req.user.userType !== 'Admin') {
         return res.status(403).json({ error: 'Unauthorized' });
     }
     next();

@@ -48,7 +48,12 @@ router.get('/:id', async (req, res) => {
             return res.status(404).send("Book not found");
         }
 
-        res.status(200).send(book);
+        const bookResponseWithImage = {
+            ...book.toObject(),
+            coverImage: book.coverImage ? `${req.protocol}://${req.get('host')}/${book.coverImage}` : null
+        };
+
+        res.status(200).send(bookResponseWithImage);
     } catch (err) {
         res.status(500).send("Internal Server error:");
         console.log(err);

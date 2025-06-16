@@ -9,7 +9,7 @@ router.post('/signup', async (req, res) => {
         const user = new User(req.body);
         const savedUser = await user.save();
 
-        const token = generateToken({ id: savedUser._id });
+        const token = generateToken({ id: savedUser._id, userType: savedUser.userType });
 
         res.status(200).send({ token: token });
     } catch (err) {
@@ -35,7 +35,7 @@ router.post('/login', async (req, res) => {
             return res.status(401).send("Invalid credentials");
         }
 
-        const token = generateToken({ id: user._id });
+        const token = generateToken({ id: user._id, userType: user.userType });
         res.status(200).send({ token: token });
     } catch (err) {
         res.status(500).send("Internal Server error:");
