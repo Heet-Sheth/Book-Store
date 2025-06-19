@@ -33,7 +33,15 @@ router.get('/search/:searchString', async (req, res) => {
             res.status(201).send("No books found");
         }
 
-        res.status(200).send(books);
+        // Format coverImage URLs
+        const formattedBooks = books.map(book => {
+            return {
+                ...book.toObject(),
+                coverImage: book.coverImage ? `${req.protocol}://${req.get('host')}/${book.coverImage}` : null
+            };
+        });
+
+        res.status(200).send(formattedBooks);
     } catch (err) {
         res.status(500).send("Internal Server error:");
         console.log(err);

@@ -47,7 +47,17 @@ router.post('/', multer({ storage: storage }).single('coverImage'), async (req, 
 router.get('/', async (req, res) => {
     try {
         const books = await Books.find();
-        res.status(200).json(books);
+        if (!books || books.length === 0) {
+            return res.status(404).json({ error: 'No books found' });
+        }
+        // Format coverImage URLs
+        const formattedBooks = books.map(book => {
+            return {
+                ...book.toObject(),
+                coverImage: book.coverImage ? `${req.protocol}://${req.get('host')}/${book.coverImage}` : null
+            };
+        });
+        res.status(200).json(formattedBooks);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -60,7 +70,12 @@ router.get('/:id', async (req, res) => {
         if (!book) {
             return res.status(404).json({ error: 'Book not found' });
         }
-        res.status(200).json(book);
+        // Format coverImage URL
+        const bookResponseWithImage = {
+            ...book.toObject(),
+            coverImage: book.coverImage ? `${req.protocol}://${req.get('host')}/${book.coverImage}` : null
+        };
+        res.status(200).json(bookResponseWithImage);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
